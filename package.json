@@ -1,0 +1,21 @@
+{
+    "name": "k8s-copy-secrets",
+    "version": "1.0.0",
+    "main": "index.js",
+    "author": "Anatoly Zelenin",
+    "license": "MIT",
+    "dependencies": {
+        "@kubernetes/client-node": "^0.7.2",
+        "debug": "^4.0.1"
+    },
+    "scripts": {
+        "start": "./node_modules/.bin/ts-node ./src/index.ts",
+        "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts"
+    },
+    "devDependencies": {
+        "@types/node": "^10.9.4",
+        "nodemon": "^1.18.4",
+        "ts-node": "^7.0.1",
+        "typescript": "^3.0.3"
+    }
+}
