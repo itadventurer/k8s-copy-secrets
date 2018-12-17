@@ -49,12 +49,15 @@ metadata:
   name: testsecret
   annotations:
     k8s-copy-secret/target-namespace: foo # <---- This line is important
+    # Use following annotation to copy additional secrets to the
+    # target namespace. E.g. if you need to copy the CA cert belonging
+    # to your private key
+    #k8s-copy-secret/additional-secrets: testsecret2
 type: Opaque
 data:
   foo: YmFyCg==
   bar: YmFuYW5hCg==
 ```
-
 
 1. On startup, `k8s-copy-secret` will attempt to copy all secrets with the
    annotation
@@ -64,7 +67,7 @@ data:
 3. When a secret is modified (with that annotation) while
    `k8s-copy-secret` is running, it will copy the secret in the target
    namespace
-2. When a secret is deleted (with that annotation) **while
+4. When a secret is deleted (with that annotation) **while
    `k8s-copy-secret` is running**, it will attempt delete the secret
    in the target namespace
 
