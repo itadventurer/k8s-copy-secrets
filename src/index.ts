@@ -8,7 +8,11 @@ if(!source_namespace || source_namespace === "") {
 }
 
 const kc = new k8s.KubeConfig();
-kc.loadFromDefault();
+if(!process.env.KUBECONFIG || process.env.KUBECONFIG === "") {
+    kc.loadFromCluster();
+} else {
+    kc.loadFromDefault();
+}
 
 const k8sApi = kc.makeApiClient(k8s.Core_v1Api);
 
@@ -23,7 +27,7 @@ async function get_secret(namespace, name) {
 async function assert_overridable_target(source_namespace, secret_name, target_namespace) {
     var target_secret = await get_secret(target_namespace, secret_name);
     if(target_secret) {
-        const target_secret_source = target_secret.metadata.annotations['k8s-copy-secret/source-namespace'];
+        const target_secret_source = target_secret.metadata.labels['k8s-copy-secret/source-namespace'];
         if(!target_secret_source || target_secret_source != source_namespace) {
             throw new Error('ERROR: Not overriding an existing secret!');
         }
@@ -34,10 +38,10 @@ async function assert_overridable_target(source_namespace, secret_name, target_n
 
 async function copy_secret(source_namespace, secret, target_namespace) {
     secret.metadata = {
-        annotations: { ...secret.metadata.annotations,
+        labels: { ...secret.metadata.labels,
                        'k8s-copy-secret/source-namespace': source_namespace
-                     },
-        labels: secret.metadata.labels,
+                },
+        annotations: secret.metadata.annotations,
         name: secret.metadata.name,
         namespace: secret.metadata.target_namespace
     };
@@ -67,12 +71,15 @@ let req = watch.watch(
     `/api/v1/namespaces/${source_namespace}/secrets/`,
     {},
     async (type, secret) => {
-        const target_namespace = secret.metadata.annotations['k8s-copy-secret/target-namespace'];
+        if(!secret.metadata || !secret.metadata.labels) {
+            return;
+        }
+        const target_namespace = secret.metadata.labels['k8s-copy-secret/target-namespace'];
         if(target_namespace) {
             try {
                 // Collect secrets to copy
                 const secrets_to_copy:any[] =[secret];
-                const additional_secrets_str = secret.metadata.annotations['k8s-copy-secret/additional-secrets'];
+                const additional_secrets_str = secret.metadata.labels['k8s-copy-secret/additional-secrets'];
                 if(additional_secrets_str) {
                     for(const secret_name of additional_secrets_str.split(",")) {
                         const secret = await get_secret(source_namespace, secret_name.trim());

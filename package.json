@@ -10,7 +10,8 @@
     },
     "scripts": {
         "start": "./node_modules/.bin/ts-node ./src/index.ts",
-        "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts"
+        "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts",
+        "build": "tsc"
     },
     "devDependencies": {
         "@types/node": "^10.9.4",

@@ -13,5 +13,5 @@ COPY yarn.lock /usr/local/app
 RUN yarn
 
 COPY src /usr/local/app/src/
-
-CMD npm start
+RUN yarn build
+CMD node dist/index.js

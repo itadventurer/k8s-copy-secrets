@@ -39,7 +39,7 @@ docker run -e NAMESPACE=[YOUR-NAMESPACE] \
 
 ## Usage
 
-Annotate the secret that should be copied with the target
+Label the secret that should be copied with the target
 namespace. Example:
 
 ```yaml
@@ -47,9 +47,9 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: testsecret
-  annotations:
+  labels:
     k8s-copy-secret/target-namespace: foo # <---- This line is important
-    # Use following annotation to copy additional secrets to the
+    # Use following label to copy additional secrets to the
     # target namespace. E.g. if you need to copy the CA cert belonging
     # to your private key
     #k8s-copy-secret/additional-secrets: testsecret2
@@ -60,19 +60,19 @@ data:
 ```
 
 1. On startup, `k8s-copy-secret` will attempt to copy all secrets with the
-   annotation
+   label
    `k8s-copy-secret/target-namespace` to the target namespace.
-2. When a new secret with that annotation is created while
+2. When a new secret with that label is created while
    `k8s-copy-secret` is running, it will attempt to copy that secret.
-3. When a secret is modified (with that annotation) while
+3. When a secret is modified (with that label) while
    `k8s-copy-secret` is running, it will copy the secret in the target
    namespace
-4. When a secret is deleted (with that annotation) **while
+4. When a secret is deleted (with that label) **while
    `k8s-copy-secret` is running**, it will attempt delete the secret
    in the target namespace
 
 **`k8s-copy-secret` will never override secrets it did not copy from the watched namespace**!
-This is determined by the annotation
+This is determined by the label
 `k8s-copy-secret/source-namespace` in the target secret. If it does
 not exist or does not match the watched namespace, the secret is ignored.
 
