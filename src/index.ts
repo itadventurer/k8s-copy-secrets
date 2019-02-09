@@ -74,8 +74,10 @@ let req = watch.watch(
         if(!secret.metadata || !secret.metadata.labels) {
             return;
         }
+        debug("Detected secret: ", secret.metadata.name);
         const target_namespace = secret.metadata.labels['k8s-copy-secret/target-namespace'];
         if(target_namespace) {
+            debug("Target namespace: ", target_namespace)
             try {
                 // Collect secrets to copy
                 const secrets_to_copy:any[] =[secret];
@@ -122,6 +124,8 @@ let req = watch.watch(
                     secret_name: secret.metadata.name,
                     source_namespace, target_namespace});
             }
+        } else {
+            debug("No target namespace detected");
         }
     },
     // done callback is called if the watch terminates normally

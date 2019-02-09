@@ -21,7 +21,7 @@ recommended!
 
 ```sh
 yarn
-npm run
+yarn run start
 ```
 
 ### As a docker container
