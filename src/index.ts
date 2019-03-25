@@ -39,8 +39,7 @@ async function assert_overridable_target(source_namespace, secret_name, target_n
 async function copy_secret(source_namespace, secret, target_namespace) {
     secret.metadata = {
         labels: { ...secret.metadata.labels,
-                       'k8s-copy-secret/source-namespace': source_namespace
-                },
+                  'k8s-copy-secret/source-namespace': source_namespace },
         annotations: secret.metadata.annotations,
         name: secret.metadata.name,
         namespace: secret.metadata.target_namespace
@@ -100,7 +99,7 @@ let req = watch.watch(
                 }
                 // Assert if we are allowed to touch the target secrets
                 for(const secret of secrets_to_copy) {
-                    assert_overridable_target(source_namespace, secret.metadata.name, target_namespace);
+                    await assert_overridable_target(source_namespace, secret.metadata.name, target_namespace);
                 }
 
                 // Decide what to do
@@ -108,12 +107,12 @@ let req = watch.watch(
                 case 'ADDED':
                 case 'MODIFIED':
                     for(const secret of secrets_to_copy) {
-                        copy_secret(source_namespace, secret, target_namespace);
+                        await copy_secret(source_namespace, secret, target_namespace);
                     }
                     break;
                 case 'DELETED':
                     for(const secret of secrets_to_copy) {
-                        delete_secret(target_namespace, secret.metadata.name);
+                        await delete_secret(target_namespace, secret.metadata.name);
                     }
                     break;
                 default:
