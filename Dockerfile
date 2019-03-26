@@ -14,4 +14,4 @@ RUN yarn
 
 COPY src /usr/local/app/src/
 RUN yarn build
-ENTRYPOINT ["yarn", "run", "start"]
+ENTRYPOINT ["node", "./dist/index.js"]
