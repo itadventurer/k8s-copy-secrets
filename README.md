@@ -84,3 +84,7 @@ not exist or does not match the watched namespace, the secret is ignored.
   the same namespace one of them will throw errors because the other
   instance was faster. Be careful
 * `k8s-copy-secrets` can currently monitor only one namespace
+
+# License
+
+k8s-copy-secrets is licensed under the [Apache License](./LICENSE), Version 2.0
